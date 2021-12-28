@@ -1,0 +1,13 @@
+<!doctype html>
+{% extends 'base.html'%}
+{% block title %}
+Тест пагинации
+{% endblock %}
+{% block sidebar %}
+{% include 'inc/_sidebar.html' %}
+{% endblock %}
+{% block content %}
+    {% for name in page_obj.object_list %}
+        <p>{{name}}</p>
+    {%endfor%}
+{% endblock %}
