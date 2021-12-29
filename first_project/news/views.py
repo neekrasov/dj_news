@@ -58,7 +58,7 @@ class HomeNews(ListView):
     # extra_context = {'title': 'Главная'}
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)  # Вызываем функцию get_context_data у предка .
+        context = super().get_context_data(**kwargs)
         context['title'] = 'Главная страница'
         return context
 
@@ -66,24 +66,23 @@ class HomeNews(ListView):
         return News.objects.filter(is_published=True).select_related('category')
 
 
-# def index(request):  старый вариант HomeNews
+# def index(request):
 #     news = News.objects.all()
 #     context = {
 #         'news': news,
 #         'title': 'Список новостей',
 #     }
 #     return render(request, 'news/index.html', context=context)
-#     # в render - сначала request потом шаблон , потом контекст.
 
 class NewsByCategory(ListView):
     model = News
     template_name = "news/index.html"
     context_object_name = 'news'
-    allow_empty = False  # Запрещаем показ пустых списком (page not found 404)
+    allow_empty = False  # (page not found 404)
     paginate_by = 2
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)  # Вызываем функцию get_context_data у предка .
+        context = super().get_context_data(**kwargs)
         context['title'] = Category.objects.get(pk=self.kwargs['category_id'])
         return context
 
@@ -91,8 +90,7 @@ class NewsByCategory(ListView):
         return News.objects.filter(category_id=self.kwargs['category_id'], is_published=True).select_related('category')
 
 
-#
-# def get_category(request, category_id): - cтарый вариант NewsByCategory
+# def get_category(request, category_id):
 #     news = News.objects.filter(category_id=category_id)
 #     category = Category.objects.get(pk=category_id)
 #     return render(request, "news/category.html", {'news': news, 'category': category})
@@ -100,13 +98,10 @@ class NewsByCategory(ListView):
 class ViewNews(DetailView):
     model = News
     template_name = 'news/news_detail.html'
-    # в DetailView вместо контекста использвуется 'object' - можно посмотреть в html
-    # но мы укажем контекст, чтобы не править код в html
     context_object_name = 'news_item'
-    # pk_url_kwarg = 'news_id' - заменили в urls на 'pk'
 
 
-# def view_news(request, news_id): - старый вариант ViewNews
+# def view_news(request, news_id):
 #     # news_item = News.objects.get(pk=news_id)
 #     news_item = get_object_or_404(News, pk=news_id)
 #     return render(request, "news/view_news.html", {"news_item": news_item})
@@ -115,14 +110,13 @@ class ViewNews(DetailView):
 class CreateNews(LoginRequiredMixin, CreateView):
     form_class = NewsForm
     template_name = 'news/add_news.html'
-    # success_url = reverse_lazy('home') редирект на главную страницу
     login_url = '/admin/'
 
-# def add_news(request): - старый вариант CreateNews
+# def add_news(request):
 #     if request.method == 'POST':
 #         form = NewsForm(request.POST)
 #         if form.is_valid():
-#             # news = News.objects.create(**form.cleaned_data) # форма не связанная с моделью
+#             # news = News.objects.create(**form.cleaned_data)
 #             news = form.save()
 #             return redirect(news)
 #     else:

@@ -22,7 +22,7 @@
                 <p class="card-text">{{ news_item.content|linebreaks }}</p>
     </div>
     <div class="card-footer text-muted">
-        {{ news_item.created_at|date:"Y-m-d H:i:s"}}
+        {% news_item.created_at|date:"Y-m-d H:i:s" %}
     </div>
 </div>
 {% endblock %}
