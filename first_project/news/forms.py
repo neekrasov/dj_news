@@ -43,3 +43,11 @@ class NewsForm(forms.ModelForm):  # forms.Form
         if re.match(r'^\d', title):
             raise ValidationError('Название не должно начинаться c цифры')
         return title
+
+
+class ContactForm(forms.Form):
+    subject = forms.CharField(label='Тема', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    body = forms.CharField(label='Текст', widget=forms.Textarea(attrs={'class': 'form-control'}))
+    email = forms.EmailField(label='Электронная почта',
+                             widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    body.widget.attrs.update(size='30')

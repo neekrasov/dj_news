@@ -12,6 +12,10 @@
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'add_news' %}">Добавить новость</a>
                 </li>
                 {% endif %}
+                 {% if request.user.is_authenticated %}
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'contact' %}">Обратная связь</a>
+                </li>
+                {% endif %}
             </ul>
             <span class="navbar-text">
             {% if request.user.is_authenticated %}

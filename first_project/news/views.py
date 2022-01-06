@@ -1,12 +1,18 @@
+import os
+
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import NewsForm, UserRegisterForm, UserLoginForm
 from .models import News, Category
+from .forms import ContactForm
+from django.core.mail import send_mail
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def user_logout(request):
@@ -41,12 +47,22 @@ def user_login(request):
     return render(request, 'news/login.html', {"form": form})
 
 
-def test(request):
-    objects = ['john1', 'paul2', 'george3', 'ringo4', 'john5', 'paul6', 'george7', 'ringo8']
-    paginator = Paginator(objects, 2)
-    page_num = request.GET.get('page', 1)
-    page_obj = paginator.get_page(page_num)
-    return render(request, 'news/test.html', {'page_obj': page_obj})
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            mail = send_mail(form.cleaned_data["subject"], form.cleaned_data["body"],
+                             os.getenv("EMAIL_HOST_USER"), [form.cleaned_data["email"]])
+            if mail:
+                messages.success(request, 'Письмо отправлено!')
+                return redirect('contact')
+            else:
+                messages.error(request, "Ошибка отправки")
+        else:
+            messages.error(request, 'Данные введены некорректно')
+    else:
+        form = ContactForm()
+    return render(request, 'news/contact.html', {"form": form})
 
 
 class HomeNews(ListView):
@@ -54,8 +70,6 @@ class HomeNews(ListView):
     template_name = "news/index.html"
     context_object_name = 'news'
     paginate_by = 2
-
-    # extra_context = {'title': 'Главная'}
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,14 +79,6 @@ class HomeNews(ListView):
     def get_queryset(self):
         return News.objects.filter(is_published=True).select_related('category')
 
-
-# def index(request):
-#     news = News.objects.all()
-#     context = {
-#         'news': news,
-#         'title': 'Список новостей',
-#     }
-#     return render(request, 'news/index.html', context=context)
 
 class NewsByCategory(ListView):
     model = News
